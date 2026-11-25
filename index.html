@@ -51,7 +51,7 @@ async function signUp(){
  if(!/^[a-z0-9_.]{3,24}$/.test(username))return message('authmsg','Username 3–24 characters ka ho: a-z, 0-9, _ ya .');
  if(password.length<6)return message('authmsg','Password kam se kam 6 characters ka rakho.');
  busy('signup',true);
- const {data,error}=await db.auth.signUp({email:username+'@instashiv.invalid',password,options:{data:{username}}});
+ const {data,error}=await db.auth.signUp({email:username+'@example.com',password,options:{data:{username}}});
  busy('signup',false);
  if(error)return message('authmsg',error.message);
  if(data.session)showApp(data.user);
@@ -61,7 +61,7 @@ async function signIn(){
  const username=$('username').value.trim().toLowerCase(),password=$('password').value;
  if(!/^[a-z0-9_.]{3,24}$/.test(username))return message('authmsg','Apna 3–24 character username enter karo.');
  busy('login',true);
- const {data,error}=await db.auth.signInWithPassword({email:username+'@instashiv.invalid',password});
+ const {data,error}=await db.auth.signInWithPassword({email:username+'@example.com',password});
  busy('login',false);
  if(error)return message('authmsg','Login nahi hua. Username/password check karo. Purana real-email account is login se match nahi karega.');
  showApp(data.user);
