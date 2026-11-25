@@ -1,164 +1,126 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>INSTASHIV</title>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    *{box-sizing:border-box}
-    body{margin:0;background:#f6f6f8;color:#20202a;font-family:Arial,sans-serif}
-    header{background:#fff;border-bottom:1px solid #e8e8ed;padding:17px 22px;text-align:center;font-size:27px;font-weight:900;letter-spacing:-1px}
-    header span{color:#e1306c}
-    main{max-width:440px;margin:42px auto;padding:0 16px}
-    .card{background:#fff;padding:26px;border:1px solid #e9e9ef;border-radius:16px;box-shadow:0 8px 30px #20202a0d}
-    h2{margin:0 0 8px}
-    .muted{color:#777;font-size:14px;line-height:1.5}
-    input{display:block;width:100%;padding:13px 14px;margin:12px 0;border:1px solid #dedee6;border-radius:9px;font-size:15px}
-    button{border:0;border-radius:9px;padding:13px 16px;background:#e1306c;color:white;font-weight:700;font-size:15px;cursor:pointer}
-    button:disabled{opacity:.6;cursor:wait}
-    .primary{width:100%;margin-top:8px}
-    .switch{text-align:center;margin-top:18px;color:#1769d2;cursor:pointer;font-size:14px}
-    #status{margin-top:15px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
-    .hidden{display:none}
-    .welcome{max-width:700px;margin:35px auto;padding:0 16px}
-    .welcome .card{text-align:center}
-    .logout{background:#333;margin-top:18px}
-    .mark{font-size:42px;margin:10px}
-  </style>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>INSTASHIV</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#080b14;--panel:#111827;--line:#253047;--muted:#9aa8bd;--pink:#ff4d8d;--purple:#8b5cf6}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 10% 0,#24123b 0,transparent 34%),var(--bg);color:#f8fafc;font:15px system-ui,Arial}
+header{position:sticky;top:0;background:#090d18ed;backdrop-filter:blur(14px);border-bottom:1px solid var(--line);z-index:3}
+nav{max-width:1050px;margin:auto;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{font-size:24px;font-weight:900;letter-spacing:-1px;background:linear-gradient(90deg,#ff4d8d,#a78bfa);color:transparent;background-clip:text}
+button,.filebtn{border:0;border-radius:12px;padding:11px 15px;background:linear-gradient(100deg,var(--pink),var(--purple));color:white;font-weight:750;cursor:pointer}
+button.secondary{background:#202b40;border:1px solid #34415b}button:disabled{opacity:.55;cursor:wait}
+main{max-width:760px;margin:25px auto;padding:0 14px}.panel,.post{background:#101827;border:1px solid var(--line);border-radius:18px;padding:18px;margin-bottom:16px;box-shadow:0 10px 35px #0002}
+h1{font-size:25px;margin:0 0 5px}.muted{color:var(--muted)}input,textarea{width:100%;background:#080f1d;border:1px solid #2a3850;border-radius:12px;padding:13px;color:white;margin:7px 0;font:inherit}textarea{min-height:90px;resize:vertical}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}.row>*{flex:1}.posthead{display:flex;align-items:center;gap:10px;margin-bottom:12px}.avatar{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--pink),var(--purple));display:grid;place-items:center;font-weight:900}.post img{width:100%;max-height:520px;object-fit:cover;border-radius:13px;margin-top:10px}.actions{display:flex;gap:9px;margin-top:12px}.actions button{padding:9px 13px}.hidden{display:none!important}.status{padding:10px;border-radius:10px;background:#1b2940;color:#cbd5e1;margin-top:10px;white-space:pre-wrap}.comment{border-top:1px solid var(--line);padding:8px 0;color:#dbe4f2}.tiny{font-size:12px}.feedtitle{display:flex;justify-content:space-between;align-items:center;margin:20px 3px}
+</style>
 </head>
 <body>
-<header>INSTA<span>SHIV</span></header>
-
-<main id="authArea">
-  <section class="card">
-    <h2 id="heading">Create your account</h2>
-    <p class="muted" id="subheading">Join INSTASHIV and share your world.</p>
-    <form id="authForm">
-      <input id="name" type="text" placeholder="Your name" autocomplete="name">
-      <input id="email" type="email" placeholder="Email address" autocomplete="email" required>
-      <input id="password" type="password" placeholder="Password (at least 6 characters)" autocomplete="current-password" minlength="6" required>
-      <button class="primary" id="action" type="submit">Sign Up</button>
-    </form>
-    <div class="switch" id="switchMode">Already have an account? Login</div>
-    <div id="status" role="status"></div>
-  </section>
-</main>
-
-<section id="userArea" class="welcome hidden">
-  <div class="card">
-    <div class="mark">🎉</div>
-    <h2>Welcome to INSTASHIV!</h2>
-    <p class="muted" id="userMessage">You are signed in.</p>
-    <p class="muted">Your account connection is working. The next step is adding shared posts, profiles, likes and comments with secure database tables.</p>
-    <button class="logout" id="logout">Log Out</button>
-  </div>
+<header><nav><div class="logo">✦ INSTASHIV</div><div class="row" style="flex:0 1 auto"><span id="who" class="muted tiny"></span><button id="logout" class="secondary hidden" onclick="logout()">Log out</button></div></nav></header>
+<main>
+<section id="auth" class="panel">
+<h1>Welcome to INSTASHIV</h1><div class="muted">Your public social space. Sign in or create your account.</div>
+<input id="username" maxlength="24" autocomplete="username" placeholder="Username (3–24 characters)">
+<input id="password" type="password" autocomplete="current-password" placeholder="Password (at least 6 characters)">
+<div class="row"><button id="signup" onclick="signUp()">Create account</button><button id="login" class="secondary" onclick="signIn()">Log in</button></div>
+<div id="authmsg" class="status hidden"></div>
 </section>
-
+<section id="app" class="hidden">
+<div class="panel">
+<h1>Create a post</h1><textarea id="caption" maxlength="1500" placeholder="What's happening?"></textarea>
+<input id="photo" type="file" accept="image/*">
+<div class="row"><button id="publish" onclick="createPost()">Publish post</button><span class="muted tiny">Public posts · Images up to 5 MB</span></div>
+<div id="postmsg" class="status hidden"></div>
+</div>
+<div class="feedtitle"><h1>Public feed</h1><button class="secondary" onclick="loadFeed()">↻ Refresh</button></div>
+<div id="feed"></div>
+</section>
+</main>
 <script>
-  // Browser-safe Supabase project credentials. Never put a secret/service_role key here.
-  const SUPABASE_URL = "https://hafaonvhwaprqngygxxd.supabase.co";
-  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_fBPfivzqRqvJNjTqHAsOPg_0I4lbtNN";
-
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
-
-  let isSignUp = true;
-
-  const authArea = document.getElementById("authArea");
-  const userArea = document.getElementById("userArea");
-  const nameInput = document.getElementById("name");
-  const heading = document.getElementById("heading");
-  const subheading = document.getElementById("subheading");
-  const actionButton = document.getElementById("action");
-  const switchMode = document.getElementById("switchMode");
-  const statusBox = document.getElementById("status");
-
-  function setMode(signUpMode) {
-    isSignUp = signUpMode;
-    heading.textContent = isSignUp ? "Create your account" : "Welcome back";
-    subheading.textContent = isSignUp
-      ? "Join INSTASHIV and share your world."
-      : "Log in to continue to INSTASHIV.";
-    actionButton.textContent = isSignUp ? "Sign Up" : "Login";
-    switchMode.textContent = isSignUp
-      ? "Already have an account? Login"
-      : "New here? Create an account";
-    nameInput.classList.toggle("hidden", !isSignUp);
-    nameInput.required = isSignUp;
-    statusBox.textContent = "";
+const SUPABASE_URL = "https://hafaonvhwaprqngygxxd.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_fBPfivzqRqvJNjTqHAsOPg_0I4lbtNN";
+const db = window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY);
+const $ = id => document.getElementById(id);
+function message(id,text){$(id).textContent=text;$(id).classList.remove('hidden')}
+function busy(id,on){$(id).disabled=on}
+function showApp(user){$('auth').classList.add('hidden');$('app').classList.remove('hidden');$('logout').classList.remove('hidden');$('who').textContent=user.email||'Signed in';loadFeed()}
+async function signUp(){
+ const username=$('username').value.trim().toLowerCase(),password=$('password').value;
+ if(!/^[a-z0-9_.]{3,24}$/.test(username))return message('authmsg','Username 3–24 characters ka ho: a-z, 0-9, _ ya .');
+ if(password.length<6)return message('authmsg','Password kam se kam 6 characters ka rakho.');
+ busy('signup',true);
+ const {data,error}=await db.auth.signUp({email:username+'@instashiv.invalid',password,options:{data:{username}}});
+ busy('signup',false);
+ if(error)return message('authmsg',error.message);
+ if(data.session)showApp(data.user);
+ else message('authmsg','Account bana, lekin Supabase email confirmation maang raha hai. Username-only login ke liye Supabase mein Confirm email OFF karo, phir try karo.');
+}
+async function signIn(){
+ const username=$('username').value.trim().toLowerCase(),password=$('password').value;
+ if(!/^[a-z0-9_.]{3,24}$/.test(username))return message('authmsg','Apna 3–24 character username enter karo.');
+ busy('login',true);
+ const {data,error}=await db.auth.signInWithPassword({email:username+'@instashiv.invalid',password});
+ busy('login',false);
+ if(error)return message('authmsg','Login nahi hua. Username/password check karo. Purana real-email account is login se match nahi karega.');
+ showApp(data.user);
+}
+async function logout(){await db.auth.signOut();$('app').classList.add('hidden');$('auth').classList.remove('hidden');$('logout').classList.add('hidden');$('who').textContent=''}
+async function createPost(){
+ const {data:{user}}=await db.auth.getUser();if(!user)return;
+ busy('publish',true);
+ try{
+  let image_url=null;const file=$('photo').files[0];
+  if(file){
+   if(file.size>5*1024*1024)throw Error('Image must be 5 MB or smaller.');
+   if(!file.type.startsWith('image/'))throw Error('Please choose an image file.');
+   const path=user.id+'/'+Date.now()+'-'+file.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+   const up=await db.storage.from('post-images').upload(path,file,{upsert:false});
+   if(up.error)throw up.error;
+   image_url=db.storage.from('post-images').getPublicUrl(path).data.publicUrl;
   }
-
-  switchMode.addEventListener("click", () => setMode(!isSignUp));
-
-  document.getElementById("authForm").addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const email = document.getElementById("email").value.trim();
-    const password = document.getElementById("password").value;
-    const fullName = nameInput.value.trim();
-
-    if (password.length < 6) {
-      statusBox.textContent = "Please use a password with at least 6 characters.";
-      return;
-    }
-
-    actionButton.disabled = true;
-    statusBox.textContent = "Please wait…";
-
-    try {
-      let result;
-      if (isSignUp) {
-        result = await supabaseClient.auth.signUp({
-          email,
-          password,
-          options: { data: { full_name: fullName } }
-        });
-      } else {
-        result = await supabaseClient.auth.signInWithPassword({ email, password });
-      }
-
-      if (result.error) throw result.error;
-
-      if (isSignUp && !result.data.session) {
-        statusBox.textContent = "Account created. Check your email for a confirmation link, then come back and log in.";
-      } else {
-        showSignedIn(result.data.user);
-      }
-    } catch (error) {
-      statusBox.textContent = error.message || "Something went wrong. Please try again.";
-    } finally {
-      actionButton.disabled = false;
-    }
-  });
-
-  function showSignedIn(user) {
-    authArea.classList.add("hidden");
-    userArea.classList.remove("hidden");
-    const displayName = user?.user_metadata?.full_name || user?.email || "INSTASHIV user";
-    document.getElementById("userMessage").textContent = "Signed in as " + displayName;
-  }
-
-  document.getElementById("logout").addEventListener("click", async () => {
-    const { error } = await supabaseClient.auth.signOut();
-    if (error) {
-      alert(error.message);
-      return;
-    }
-    userArea.classList.add("hidden");
-    authArea.classList.remove("hidden");
-    document.getElementById("authForm").reset();
-    setMode(true);
-  });
-
-  async function checkExistingSession() {
-    const { data, error } = await supabaseClient.auth.getSession();
-    if (!error && data.session) showSignedIn(data.session.user);
-  }
-
-  setMode(true);
-  checkExistingSession();
+  const {error}=await db.from('posts').insert({user_id:user.id,content:$('caption').value.trim(),image_url});
+  if(error)throw error;
+  $('caption').value='';$('photo').value='';message('postmsg','Posted successfully!');await loadFeed();
+ }catch(e){message('postmsg',e.message||'Could not publish post.')}
+ busy('publish',false);
+}
+async function loadFeed(){
+ const feed=$('feed');feed.innerHTML='<div class="muted">Loading posts…</div>';
+ const {data:posts,error}=await db.from('posts').select('id,user_id,content,image_url,created_at,profiles(username)').order('created_at',{ascending:false}).limit(50);
+ if(error){feed.textContent='Feed error: '+error.message+' — check that the database setup SQL has been run.';return}
+ if(!posts.length){feed.innerHTML='<div class="panel muted">No posts yet. Be the first to post!</div>';return}
+ const {data:{user}}=await db.auth.getUser();
+ feed.innerHTML='';
+ for(const p of posts){
+  const [likesRes,commentsRes,myLike]=await Promise.all([
+   db.from('likes').select('id',{count:'exact',head:true}).eq('post_id',p.id),
+   db.from('comments').select('id,content,created_at,profiles(username)').eq('post_id',p.id).order('created_at').limit(4),
+   user?db.from('likes').select('id').eq('post_id',p.id).eq('user_id',user.id).maybeSingle():Promise.resolve({data:null})
+  ]);
+  const card=document.createElement('article');card.className='post';
+  const head=document.createElement('div');head.className='posthead';
+  const av=document.createElement('div');av.className='avatar';av.textContent=(p.profiles?.username||'U').slice(0,1).toUpperCase();
+  const info=document.createElement('div');info.innerHTML='<strong></strong><div class="muted tiny"></div>';info.querySelector('strong').textContent=p.profiles?.username||'INSTASHIV user';info.querySelector('div').textContent=new Date(p.created_at).toLocaleString();
+  head.append(av,info);card.append(head);
+  if(p.content){const para=document.createElement('p');para.style.whiteSpace='pre-wrap';para.textContent=p.content;card.append(para)}
+  if(p.image_url){const img=document.createElement('img');img.src=p.image_url;img.alt='Post image';card.append(img)}
+  const actions=document.createElement('div');actions.className='actions';
+  const like=document.createElement('button');like.className='secondary';like.textContent=(myLike.data?'♥':'♡')+' Like · '+(likesRes.count||0);like.onclick=()=>toggleLike(p.id,!!myLike.data);
+  const cbtn=document.createElement('button');cbtn.className='secondary';cbtn.textContent='Comments';actions.append(like,cbtn);card.append(actions);
+  const comments=document.createElement('div');comments.className='comments hidden';
+  (commentsRes.data||[]).forEach(c=>{const d=document.createElement('div');d.className='comment';d.textContent=(c.profiles?.username||'User')+': '+c.content;comments.append(d)});
+  if(user){const input=document.createElement('input');input.placeholder='Write a comment…';const send=document.createElement('button');send.textContent='Send';send.onclick=async()=>{if(!input.value.trim())return;const {error}=await db.from('comments').insert({post_id:p.id,user_id:user.id,content:input.value.trim()});if(error)alert(error.message);else loadFeed()};comments.append(input,send)}
+  cbtn.onclick=()=>comments.classList.toggle('hidden');card.append(comments);feed.append(card);
+ }
+}
+async function toggleLike(postId,liked){
+ const {data:{user}}=await db.auth.getUser();if(!user)return;
+ const result=liked?await db.from('likes').delete().eq('post_id',postId).eq('user_id',user.id):await db.from('likes').insert({post_id:postId,user_id:user.id});
+ if(result.error)alert(result.error.message);else loadFeed();
+}
+db.auth.getSession().then(({data})=>{if(data.session)showApp(data.session.user)});
+db.auth.onAuthStateChange((_event,session)=>{if(session)showApp(session.user)});
 </script>
-</body>
-</html>
+</body></html>
