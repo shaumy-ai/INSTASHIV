@@ -1,106 +1,164 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>INSTASHIV</title>
-<style>
-*{box-sizing:border-box}
-body{margin:0;background:#fafafa;color:#171717;font-family:Arial,sans-serif}
-header{height:65px;background:white;border-bottom:1px solid #ddd;display:flex;align-items:center;justify-content:space-around;position:sticky;top:0;z-index:5}
-.logo{font-size:25px;font-weight:900;letter-spacing:-1px}
-.logo span{color:#e1306c}
-button{cursor:pointer;border:0;background:none;font-size:20px}
-.layout{max-width:950px;margin:25px auto;display:grid;grid-template-columns:1fr 280px;gap:35px;padding:0 12px}
-.stories{display:flex;gap:15px;background:white;border:1px solid #ddd;border-radius:10px;padding:16px;overflow:auto;margin-bottom:20px}
-.story{text-align:center;min-width:60px;font-size:12px}
-.circle{width:58px;height:58px;border-radius:50%;padding:3px;background:linear-gradient(45deg,#ffb000,#ed168c,#7639db);margin:auto auto 5px}
-.circle img{width:100%;height:100%;border-radius:50%;border:3px solid white;object-fit:cover}
-.post{background:white;border:1px solid #ddd;border-radius:10px;margin-bottom:22px;overflow:hidden}
-.user{padding:13px;display:flex;align-items:center;gap:10px;font-weight:bold}
-.avatar{width:35px;height:35px;border-radius:50%;object-fit:cover}
-.postimg{width:100%;aspect-ratio:1/1;object-fit:cover;display:block}
-.actions{padding:12px 14px;display:flex;gap:15px}
-.actions button{font-size:25px}
-.caption{padding:0 14px 15px;font-size:14px}
-.side{padding:15px;position:sticky;top:85px;height:max-content}
-.side h3{font-size:16px}
-.small{color:#777;font-size:13px}
-.blue{color:#1683ed;font-weight:bold}
-.create{background:#fff;border:1px solid #ddd;padding:15px;border-radius:10px;margin-bottom:20px}
-input{width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;margin:7px 0}
-.primary{background:#1683ed;color:white;padding:11px 18px;border-radius:8px;font-size:14px}
-@media(max-width:700px){.layout{display:block;margin:12px auto}.side{display:none}header{justify-content:space-around}.stories{border-radius:0}.post{border-radius:0}}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>INSTASHIV</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    *{box-sizing:border-box}
+    body{margin:0;background:#f6f6f8;color:#20202a;font-family:Arial,sans-serif}
+    header{background:#fff;border-bottom:1px solid #e8e8ed;padding:17px 22px;text-align:center;font-size:27px;font-weight:900;letter-spacing:-1px}
+    header span{color:#e1306c}
+    main{max-width:440px;margin:42px auto;padding:0 16px}
+    .card{background:#fff;padding:26px;border:1px solid #e9e9ef;border-radius:16px;box-shadow:0 8px 30px #20202a0d}
+    h2{margin:0 0 8px}
+    .muted{color:#777;font-size:14px;line-height:1.5}
+    input{display:block;width:100%;padding:13px 14px;margin:12px 0;border:1px solid #dedee6;border-radius:9px;font-size:15px}
+    button{border:0;border-radius:9px;padding:13px 16px;background:#e1306c;color:white;font-weight:700;font-size:15px;cursor:pointer}
+    button:disabled{opacity:.6;cursor:wait}
+    .primary{width:100%;margin-top:8px}
+    .switch{text-align:center;margin-top:18px;color:#1769d2;cursor:pointer;font-size:14px}
+    #status{margin-top:15px;font-size:14px;line-height:1.5;overflow-wrap:anywhere}
+    .hidden{display:none}
+    .welcome{max-width:700px;margin:35px auto;padding:0 16px}
+    .welcome .card{text-align:center}
+    .logout{background:#333;margin-top:18px}
+    .mark{font-size:42px;margin:10px}
+  </style>
 </head>
 <body>
-<header>
-<div class="logo">INSTA<span>SHIV</span></div>
-<button onclick="location.reload()">⌂</button>
-<button onclick="document.getElementById('photo').click()">＋</button>
-<button onclick="alert('Welcome to INSTASHIV!')">♡</button>
-<button onclick="alert('Your profile is coming soon!')">👤</button>
-</header>
+<header>INSTA<span>SHIV</span></header>
 
-<div class="layout">
-<main>
-<div class="stories">
-<div class="story"><div class="circle"><img src="https://i.pravatar.cc/100?img=12"></div>You</div>
-<div class="story"><div class="circle"><img src="https://i.pravatar.cc/100?img=5"></div>Rahul</div>
-<div class="story"><div class="circle"><img src="https://i.pravatar.cc/100?img=8"></div>Priya</div>
-<div class="story"><div class="circle"><img src="https://i.pravatar.cc/100?img=15"></div>Arjun</div>
-<div class="story"><div class="circle"><img src="https://i.pravatar.cc/100?img=20"></div>Neha</div>
-</div>
-
-<div class="create">
-<b>Create a post ✨</b>
-<input id="photo" type="file" accept="image/*">
-<input id="captionInput" placeholder="Write a caption...">
-<button class="primary" onclick="addPost()">Share Post</button>
-</div>
-
-<div id="feed">
-<article class="post">
-<div class="user"><img class="avatar" src="https://i.pravatar.cc/100?img=12"> Shaumy <span class="blue">●</span></div>
-<img class="postimg" src="https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?w=900">
-<div class="actions"><button onclick="like(this)">♡</button><button onclick="comment()">♧</button><button onclick="alert('Share INSTASHIV with friends!')">➤</button></div>
-<div class="caption"><b>Shaumy</b> Welcome to INSTASHIV! ❤️<br><br><span class="small">Be yourself. Share your world.</span></div>
-</article>
-</div>
+<main id="authArea">
+  <section class="card">
+    <h2 id="heading">Create your account</h2>
+    <p class="muted" id="subheading">Join INSTASHIV and share your world.</p>
+    <form id="authForm">
+      <input id="name" type="text" placeholder="Your name" autocomplete="name">
+      <input id="email" type="email" placeholder="Email address" autocomplete="email" required>
+      <input id="password" type="password" placeholder="Password (at least 6 characters)" autocomplete="current-password" minlength="6" required>
+      <button class="primary" id="action" type="submit">Sign Up</button>
+    </form>
+    <div class="switch" id="switchMode">Already have an account? Login</div>
+    <div id="status" role="status"></div>
+  </section>
 </main>
 
-<aside class="side">
-<h3>INSTASHIV</h3>
-<p class="small">Welcome to your new social world.</p>
-<hr>
-<p><b>Shaumy</b></p>
-<p class="small">Discover • Connect • Share</p>
-<p class="blue">Explore your community →</p>
-</aside>
-</div>
+<section id="userArea" class="welcome hidden">
+  <div class="card">
+    <div class="mark">🎉</div>
+    <h2>Welcome to INSTASHIV!</h2>
+    <p class="muted" id="userMessage">You are signed in.</p>
+    <p class="muted">Your account connection is working. The next step is adding shared posts, profiles, likes and comments with secure database tables.</p>
+    <button class="logout" id="logout">Log Out</button>
+  </div>
+</section>
 
 <script>
-function like(btn){
-btn.textContent=btn.textContent==='♡'?'❤️':'♡';
-}
-function comment(){
-let c=prompt('Write your comment:');
-if(c)alert('Comment: '+c);
-}
-function addPost(){
-let file=document.getElementById('photo').files[0];
-let caption=document.getElementById('captionInput').value;
-if(!file){alert('Please select a photo first!');return;}
-let url=URL.createObjectURL(file);
-let post=document.createElement('article');
-post.className='post';
-post.innerHTML='<div class="user">👤 Shaumy</div><img class="postimg"><div class="actions"><button onclick="like(this)">♡</button><button onclick="comment()">♧</button><button>➤</button></div><div class="caption"><b>Shaumy</b> '+caption.replace(/[&<>"]/g,'')+'</div>';
-post.querySelector('img').src=url;
-document.getElementById('feed').prepend(post);
-document.getElementById('captionInput').value='';
-document.getElementById('photo').value='';
-}
+  // Browser-safe Supabase project credentials. Never put a secret/service_role key here.
+  const SUPABASE_URL = "https://hafaonvhwaprqngygxxd.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_fBPfivzqRqvJNjTqHAsOPg_0I4lbtNN";
+
+  const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+  let isSignUp = true;
+
+  const authArea = document.getElementById("authArea");
+  const userArea = document.getElementById("userArea");
+  const nameInput = document.getElementById("name");
+  const heading = document.getElementById("heading");
+  const subheading = document.getElementById("subheading");
+  const actionButton = document.getElementById("action");
+  const switchMode = document.getElementById("switchMode");
+  const statusBox = document.getElementById("status");
+
+  function setMode(signUpMode) {
+    isSignUp = signUpMode;
+    heading.textContent = isSignUp ? "Create your account" : "Welcome back";
+    subheading.textContent = isSignUp
+      ? "Join INSTASHIV and share your world."
+      : "Log in to continue to INSTASHIV.";
+    actionButton.textContent = isSignUp ? "Sign Up" : "Login";
+    switchMode.textContent = isSignUp
+      ? "Already have an account? Login"
+      : "New here? Create an account";
+    nameInput.classList.toggle("hidden", !isSignUp);
+    nameInput.required = isSignUp;
+    statusBox.textContent = "";
+  }
+
+  switchMode.addEventListener("click", () => setMode(!isSignUp));
+
+  document.getElementById("authForm").addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+    const fullName = nameInput.value.trim();
+
+    if (password.length < 6) {
+      statusBox.textContent = "Please use a password with at least 6 characters.";
+      return;
+    }
+
+    actionButton.disabled = true;
+    statusBox.textContent = "Please wait…";
+
+    try {
+      let result;
+      if (isSignUp) {
+        result = await supabaseClient.auth.signUp({
+          email,
+          password,
+          options: { data: { full_name: fullName } }
+        });
+      } else {
+        result = await supabaseClient.auth.signInWithPassword({ email, password });
+      }
+
+      if (result.error) throw result.error;
+
+      if (isSignUp && !result.data.session) {
+        statusBox.textContent = "Account created. Check your email for a confirmation link, then come back and log in.";
+      } else {
+        showSignedIn(result.data.user);
+      }
+    } catch (error) {
+      statusBox.textContent = error.message || "Something went wrong. Please try again.";
+    } finally {
+      actionButton.disabled = false;
+    }
+  });
+
+  function showSignedIn(user) {
+    authArea.classList.add("hidden");
+    userArea.classList.remove("hidden");
+    const displayName = user?.user_metadata?.full_name || user?.email || "INSTASHIV user";
+    document.getElementById("userMessage").textContent = "Signed in as " + displayName;
+  }
+
+  document.getElementById("logout").addEventListener("click", async () => {
+    const { error } = await supabaseClient.auth.signOut();
+    if (error) {
+      alert(error.message);
+      return;
+    }
+    userArea.classList.add("hidden");
+    authArea.classList.remove("hidden");
+    document.getElementById("authForm").reset();
+    setMode(true);
+  });
+
+  async function checkExistingSession() {
+    const { data, error } = await supabaseClient.auth.getSession();
+    if (!error && data.session) showSignedIn(data.session.user);
+  }
+
+  setMode(true);
+  checkExistingSession();
 </script>
 </body>
 </html>
